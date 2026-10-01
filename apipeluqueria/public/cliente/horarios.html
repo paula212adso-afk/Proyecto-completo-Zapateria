@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horarios · Peluquería</title><link rel="stylesheet" href="../assets/estilo.css"></head><body><div class="franja"></div>
+<header class="barra"><b>Peluquería</b><div><span id="quien"></span><button class="sec chico" id="salir">Cerrar sesión</button></div></header>
+<main><h2>Horarios disponibles</h2><p class="lead">Estos son los turnos libres de nuestros trabajadores.</p>
+<div id="lista" aria-live="polite">Cargando…</div></main>
+<script src="../assets/api.js"></script>
+<script>
+const LOGIN = 'login.html', s = Sesion.exigir('cliente', LOGIN);
+document.getElementById('quien').textContent = s.usuario.nombres;
+document.getElementById('salir').onclick = () => Sesion.salir('cliente', LOGIN);
+(async () => {
+  const el = document.getElementById('lista');
+  try {
+    const { horarios } = await api('/horarios', { rol: 'cliente', login: LOGIN });
+    if (!horarios.length) { el.innerHTML = '<div class="vacio">No hay horarios disponibles por ahora. Vuelve a consultar más tarde.</div>'; return; }
+    const dias = {};
+    horarios.sort((a,b) => (a.fecha+a.horaInicio).localeCompare(b.fecha+b.horaInicio))
+            .forEach(h => (dias[String(h.fecha).slice(0,10)] ||= []).push(h));
+    el.innerHTML = Object.entries(dias).map(([f, hs]) => `<section class="dia"><h3>${esc(fmtFecha(f))}</h3><div class="turnos">
+      ${hs.map(h => `<div class="turno"><b>${fmtHora(h.horaInicio)} – ${fmtHora(h.horaFin)}</b><span>${esc(h.trabajador)}</span></div>`).join('')}</div></section>`).join('');
+  } catch (err) { el.innerHTML = '<div class="aviso ver error">' + esc(err.message) + '</div>'; }
+})();
+</script></body></html>

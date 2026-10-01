@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis horarios · Peluquería</title><link rel="stylesheet" href="../assets/estilo.css"></head><body><div class="franja"></div>
+<header class="barra"><b>Peluquería</b><div><span id="quien"></span><button class="sec chico" id="salir">Cerrar sesión</button></div></header>
+<main><h2>Mis horarios</h2><p class="lead">Edita la fecha y las horas, o elimina los que ya no ofrezcas.</p>
+<div id="lista" aria-live="polite">Cargando…</div></main>
+<script src="../assets/api.js"></script>
+<script>
+const LOGIN = 'login.html', s = Sesion.exigir('trabajador', LOGIN), lista = document.getElementById('lista');
+document.getElementById('quien').textContent = s.usuario.nombres;
+document.getElementById('salir').onclick = () => Sesion.salir('trabajador', LOGIN);
+async function cargar() {
+  try {
+    const { horarios } = await api('/trabajador/horarios/' + s.usuario.idtrabajador, { rol: 'trabajador', login: LOGIN });
+    lista.innerHTML = tablaHorarios(horarios, { conTrabajador: false });
+    activarAccionesHorario(lista, horarios, { rol: 'trabajador', login: LOGIN, recargar: cargar });
+  } catch (err) { lista.innerHTML = '<div class="aviso ver error">' + esc(err.message) + '</div>'; }
+}
+cargar();
+</script></body></html>

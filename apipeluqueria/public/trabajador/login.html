@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acceso de trabajadores · Peluquería</title><link rel="stylesheet" href="../assets/estilo.css"></head><body>
+<div class="franja"></div>
+<div class="acceso">
+  <section class="acceso-lado"><h1>Tu agenda, a tu manera.</h1><p>Consulta, ajusta o elimina tus horarios.</p></section>
+  <section class="acceso-form">
+    <h2>Acceso de trabajadores</h2><p class="sub">Ingresa con tu correo y contraseña.</p>
+    <form id="form" novalidate>
+      <label for="correo">Correo</label><input id="correo" name="correo" type="email" autocomplete="username" required>
+      <label for="clave">Contraseña</label><input id="clave" name="clave" type="password" autocomplete="current-password" required>
+      <button class="completo">Iniciar sesión</button>
+      <div id="msg" class="aviso" role="alert"></div>
+    </form>
+    <p class="otros"><a href="../index.html">Volver al inicio</a></p>
+  </section>
+</div>
+<script src="../assets/api.js"></script>
+<script>activarLogin({ ruta: '/trabajador/login', rol: 'trabajador', destino: 'horarios.html' });</script>
+</body></html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel · Peluquería</title><link rel="stylesheet" href="../assets/estilo.css"></head><body><div class="franja"></div>
+<header class="barra"><b>Peluquería · Administración</b><div><span id="quien"></span><button class="sec chico" id="salir">Cerrar sesión</button></div></header>
+<main>
+<div class="tabs" role="tablist" id="tabs">
+  <button role="tab" data-t="horarios" aria-selected="true">Horarios</button>
+  <button role="tab" data-t="clientes" aria-selected="false">Clientes</button>
+  <button role="tab" data-t="trabajadores" aria-selected="false">Trabajadores</button>
+  <button role="tab" data-t="admins" aria-selected="false">Administradores</button>
+</div>
+<section id="vista" aria-live="polite"></section>
+</main>
+<script src="../assets/api.js"></script>
+<script>
+const LOGIN = 'login.html', s = Sesion.exigir('admin', LOGIN), vista = document.getElementById('vista');
+const O = { rol: 'admin', login: LOGIN };
+document.getElementById('quien').textContent = s.usuario.nombres;
+document.getElementById('salir').onclick = () => Sesion.salir('admin', LOGIN);
+let tab = 'horarios';
+
+document.getElementById('tabs').onclick = (e) => {
+  const b = e.target.closest('[data-t]'); if (!b) return;
+  tab = b.dataset.t;
+  document.querySelectorAll('#tabs button').forEach(x => x.setAttribute('aria-selected', x === b));
+  cargar();
+};
+
+const cabecera = (titulo, boton) => `<div class="cabecera"><h2>${titulo}</h2>${boton ? `<button id="nuevo">${boton}</button>` : ''}</div>`;
+
+async function cargar() {
+  vista.innerHTML = 'Cargando…';
+  try {
+    if (tab === 'horarios') {
+      const { horarios } = await api('/seguridad/horarios', O);
+      vista.innerHTML = cabecera('Horarios de todos los trabajadores') + tablaHorarios(horarios, { conTrabajador: true });
+      activarAccionesHorario(vista, horarios, { ...O, recargar: cargar });
+    }
+    if (tab === 'clientes') {
+      const { clientes } = await api('/seguridad/clientes', O);
+      vista.innerHTML = cabecera('Clientes', 'Nuevo cliente') + tablaPersonas(clientes, 'idcliente', false);
+      document.getElementById('nuevo').onclick = () => formulario('Nuevo cliente', '/seguridad/crearcliente');
+      borrado('/seguridad/cliente/', 'cliente');
+    }
+    if (tab === 'trabajadores') {
+      const { trabajadores } = await api('/seguridad/trabajadores', O);
+      const solo = trabajadores.filter(t => t.rol.toLowerCase() === 'trabajador');
+      vista.innerHTML = cabecera('Trabajadores', 'Nuevo trabajador') + tablaPersonas(solo, 'idtrabajador', false);
+      document.getElementById('nuevo').onclick = () => formulario('Nuevo trabajador', '/seguridad/creartrabajador');
+      borrado('/seguridad/trabajador/', 'trabajador');
+    }
+    if (tab === 'admins') {
+      const { trabajadores } = await api('/seguridad/trabajadores', O);
+      const solo = trabajadores.filter(t => t.rol.toLowerCase() === 'admin');
+      vista.innerHTML = cabecera('Administradores', 'Nuevo administrador') + tablaPersonas(solo, 'idtrabajador', true);
+      document.getElementById('nuevo').onclick = () => formulario('Nuevo administrador', '/seguridad/crearadmin');
+    }
+  } catch (err) { vista.innerHTML = '<div class="aviso ver error">' + esc(err.message) + '</div>'; }
+}
+
+function tablaPersonas(lista, idCampo, sinEliminar) {
+  if (!lista.length) return '<div class="vacio">Aún no hay registros. Usa el botón de arriba para crear el primero.</div>';
+  return `<div class="envoltura"><table><thead><tr><th>Nombre</th><th>Documento</th><th>Correo</th><th>Teléfono</th><th>Estado</th>${sinEliminar ? '' : '<th></th>'}</tr></thead><tbody>
+  ${lista.map(p => `<tr><td>${esc(p.nombres)}</td><td>${esc(p.tipoDocumento)} ${esc(p.numeroDocumento)}</td><td>${esc(p.correo)}</td><td>${esc(p.telefono)}</td>
+  <td><span class="etq ok">${esc(p.estado)}</span></td>
+  ${sinEliminar ? '' : `<td class="acc"><button class="peligro chico" data-borrar="${p[idCampo]}" data-nombre="${esc(p.nombres)}">Eliminar</button></td>`}</tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+function borrado(ruta, tipo) {
+  vista.onclick = async (e) => {
+    const b = e.target.closest('[data-borrar]'); if (!b) return;
+    const extra = tipo === 'trabajador' ? ' También se borrarán sus horarios.' : '';
+    if (!confirm(`¿Eliminar a ${b.dataset.nombre}?${extra} No se puede deshacer.`)) return;
+    try { await api(ruta + b.dataset.borrar, { ...O, metodo: 'DELETE' }); toast('Eliminado'); cargar(); }
+    catch (err) { toast(err.message); }
+  };
+}
+
+function formulario(titulo, ruta) {
+  const d = document.createElement('dialog');
+  d.innerHTML = `<form id="fp"><h3>${titulo}</h3>${camposPersona()}<div class="aviso" id="pm" role="alert"></div>
+    <div class="botones"><button type="button" class="sec" id="pc">Cancelar</button><button>Crear</button></div></form>`;
+  document.body.append(d); d.showModal();
+  d.querySelector('#pc').onclick = () => d.close();
+  d.addEventListener('close', () => d.remove());
+  d.querySelector('#fp').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try { await api(ruta, { ...O, metodo: 'POST', cuerpo: leerPersona(e.target) }); d.close(); toast('Creado correctamente'); cargar(); }
+    catch (err) { aviso(d.querySelector('#pm'), 'error', err.message); }
+  });
+}
+cargar();
+</script></body></html>

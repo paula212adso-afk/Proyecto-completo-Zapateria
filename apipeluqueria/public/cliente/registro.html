@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crear cuenta · Peluquería</title><link rel="stylesheet" href="../assets/estilo.css"></head><body><div class="franja"></div>
+<div class="acceso">
+  <section class="acceso-lado"><h1>Crea tu cuenta.</h1><p>Con ella podrás ver los horarios disponibles.</p></section>
+  <section class="acceso-form">
+    <h2>Crear cuenta de cliente</h2><p class="sub">Completa tus datos.</p>
+    <form id="form">
+      <button class="completo">Crear cuenta</button>
+      <div id="msg" class="aviso" role="alert"></div>
+    </form>
+    <p class="otros">¿Ya tienes cuenta? <a href="login.html">Iniciar sesión</a></p>
+  </section>
+</div>
+<script src="../assets/api.js"></script>
+<script>
+document.querySelector('#form button').insertAdjacentHTML('beforebegin', camposPersona());
+const f = document.getElementById('form'), msg = document.getElementById('msg');
+f.addEventListener('submit', async (e) => {
+  e.preventDefault(); const b = f.querySelector('button'); b.disabled = true; msg.className = 'aviso';
+  try {
+    await api('/usuario/crear', { metodo: 'POST', cuerpo: leerPersona(f) });
+    aviso(msg, 'ok', 'Cuenta creada. Te llevamos a iniciar sesión…');
+    setTimeout(() => location.href = 'login.html', 1400);
+  } catch (err) { aviso(msg, 'error', err.message); b.disabled = false; }
+});
+</script></body></html>

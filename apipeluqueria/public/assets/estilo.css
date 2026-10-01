@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap');
+
+:root{
+  --fondo:#F5F1F7; --papel:#FFFFFF; --tinta:#2A1D36; --suave:#6D6079; --linea:#E1D8E8;
+  --ciruela:#7A2E6E; --ciruela-osc:#5E2255; --lila:#EBE1F0;
+  --ok:#2C7A57; --error:#B3342C;
+  --titulo:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --texto:'Figtree','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{--fondo:#1D1426; --papel:#2A1D36; --tinta:#F2EAF6; --suave:#B9A9C6; --linea:#43344F; --lila:#3A2A47; --ciruela:#C873B8; --ciruela-osc:#E19AD3;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--tinta);font:16px/1.5 var(--texto)}
+h1,h2,h3{font-family:var(--titulo);line-height:1.1;margin:0}
+a{color:var(--ciruela)}
+:focus-visible{outline:3px solid var(--ciruela);outline-offset:2px}
+
+/* Franja de poste de barbero: lo único decorativo */
+.franja{height:8px;background:repeating-linear-gradient(-45deg,var(--ciruela) 0 12px,var(--papel) 12px 24px,#2F7F8F 24px 36px,var(--papel) 36px 48px)}
+
+/* Acceso (login / registro) */
+.acceso{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.acceso-lado{background:var(--ciruela);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:flex-end;gap:12px}
+.acceso-lado h1{font-size:clamp(2.6rem,6vw,4.6rem);font-weight:800;letter-spacing:-.02em}
+.acceso-lado p{max-width:34ch;opacity:.9;margin:0}
+.acceso-form{padding:48px;display:flex;flex-direction:column;justify-content:center;max-width:460px;width:100%;margin:auto}
+.acceso-form h2{font-size:1.8rem;margin-bottom:6px}
+.acceso-form .sub{color:var(--suave);margin:0 0 24px}
+@media(max-width:760px){.acceso{grid-template-columns:1fr}.acceso-lado{padding:28px;min-height:30vh}.acceso-form{padding:28px}}
+
+/* Formularios */
+label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+input,select{width:100%;padding:11px 12px;border:1.5px solid var(--linea);border-radius:8px;background:var(--papel);color:var(--tinta);font:inherit}
+input:focus,select:focus{border-color:var(--ciruela)}
+.fila2{display:grid;grid-template-columns:110px 1fr;gap:12px}
+.ayuda{font-size:.8rem;color:var(--suave);margin-top:4px}
+button,.btn{font:600 .95rem var(--texto);border:0;border-radius:8px;padding:11px 18px;cursor:pointer;background:var(--ciruela);color:#fff;text-decoration:none;display:inline-block}
+button:hover,.btn:hover{background:var(--ciruela-osc)}
+button.sec{background:var(--lila);color:var(--tinta)}
+button.sec:hover{background:var(--linea)}
+button.peligro{background:transparent;color:var(--error);border:1.5px solid var(--error);padding:6px 12px}
+button.peligro:hover{background:var(--error);color:#fff}
+button.chico{padding:6px 12px}
+button[disabled]{opacity:.6;cursor:wait}
+.completo{width:100%;margin-top:22px}
+.aviso{padding:10px 12px;border-radius:8px;margin-top:16px;font-size:.92rem;display:none}
+.aviso.ver{display:block}
+.aviso.error{background:#F9E3E1;color:#7C1F19}
+.aviso.ok{background:#DDF1E7;color:#175238}
+@media (prefers-color-scheme: dark){.aviso.error{background:#4A1F22;color:#FFD3CF}.aviso.ok{background:#173B2B;color:#C6F0DB}}
+.otros{margin-top:22px;font-size:.92rem;color:var(--suave)}
+
+/* Panel */
+.barra{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 28px;background:var(--papel);border-bottom:1px solid var(--linea);flex-wrap:wrap}
+.barra b{font-family:var(--titulo);font-size:1.25rem}
+.barra span{color:var(--suave);font-size:.9rem;margin-right:12px}
+main{max-width:1000px;margin:0 auto;padding:28px}
+main h2{font-size:1.7rem;margin-bottom:4px}
+.lead{color:var(--suave);margin:0 0 22px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--linea);margin-bottom:22px;flex-wrap:wrap}
+.tabs button{background:none;color:var(--suave);border-radius:8px 8px 0 0;padding:10px 16px}
+.tabs button[aria-selected=true]{color:var(--ciruela);box-shadow:inset 0 -3px 0 var(--ciruela);background:none}
+.tabs button:hover{background:var(--lila)}
+.cabecera{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+
+.envoltura{overflow-x:auto;background:var(--papel);border:1px solid var(--linea);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--linea);font-size:.95rem}
+th{font-weight:600;color:var(--suave);font-size:.85rem}
+tr:last-child td{border-bottom:0}
+td.acc{white-space:nowrap;text-align:right}
+td.acc button+button{margin-left:6px}
+.vacio{padding:36px;text-align:center;color:var(--suave)}
+.etq{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--lila);font-size:.8rem;font-weight:600}
+.etq.ok{background:#DDF1E7;color:#175238}
+
+/* Horarios para cliente: agrupados por día */
+.dia{margin-bottom:22px}
+.dia h3{font-size:1.15rem;margin-bottom:10px;text-transform:capitalize}
+.turnos{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.turno{background:var(--papel);border:1px solid var(--linea);border-left:5px solid var(--ciruela);border-radius:8px;padding:12px 14px}
+.turno b{display:block;font-family:var(--titulo);font-size:1.15rem}
+.turno span{color:var(--suave);font-size:.9rem}
+
+dialog{border:0;border-radius:12px;padding:24px;width:min(460px,92vw);background:var(--papel);color:var(--tinta)}
+dialog::backdrop{background:rgba(30,15,40,.55)}
+dialog h3{font-size:1.3rem;margin-bottom:4px}
+.botones{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--tinta);color:var(--fondo);padding:11px 18px;border-radius:8px;z-index:50;font-size:.92rem}
+
+/* Portada */
+.portada{max-width:760px;margin:0 auto;padding:64px 28px}
+.portada h1{font-size:clamp(2.6rem,7vw,4.4rem);font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+.portada .lead{font-size:1.1rem;margin-bottom:34px}
+.accesos{display:grid;gap:12px}
+.accesos a{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px 20px;background:var(--papel);border:1px solid var(--linea);border-radius:10px;text-decoration:none;color:var(--tinta)}
+.accesos a:hover{border-color:var(--ciruela)}
+.accesos b{font-family:var(--titulo);font-size:1.25rem}
+.accesos span{color:var(--suave);font-size:.9rem}
+@media (prefers-reduced-motion:no-preference){.toast{animation:sube .2s ease-out}@keyframes sube{from{opacity:0;transform:translate(-50%,8px)}}}
